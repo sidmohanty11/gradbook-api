@@ -1,15 +1,17 @@
 package models
 
+import "time"
+
 type User struct {
-	ID             uint   `json:"id"`
-	Name           string `json:"name"`
-	Username       string `json:"username"`
-	Email          string `json:"email" gorm:"unique"`
-	Password       []byte `json:"-"`
-	Branch         string `json:"branch"`
-	RegistrationNo string `json:"reg_no"`
+	ID           uint      `json:"id"`
+	Username     string    `json:"username"`
+	Email        string    `json:"email"`
+	HashPassword string    `json:"hash"`
+	ImageURL     string    `json:"image_url"`
+	CreatedOn    time.Time `json:"created_on"`
+	LastLogin    time.Time `json:"last_login"`
 }
 
 type Users struct {
-	Users User `json:"users"`
+	Users []User `json:"users"`
 }

@@ -3,7 +3,14 @@ package models
 type Story struct {
 	ID     uint   `json:"id"`
 	UserId uint   `json:"user_id"`
-	Story  string `json:"story_text"`
+	Branch  string `json:"branch"`
+	Clubs  string `json:"clubs"`
+	Motto  string `json:"motto"`
+	GithubLink  string `json:"github_link"`
+	YoutubeLink  string `json:"youtube_link"`
+	LinkedinLink  string `json:"linkedin_link"`
+	ImageURL  string `json:"image_url"`
+	Journey  string `json:"journey"`
 }
 
 type Stories struct {
