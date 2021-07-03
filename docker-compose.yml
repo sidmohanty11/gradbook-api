@@ -1,0 +1,28 @@
+version: '3.9'
+
+services: 
+
+    # Backend API
+    gradbook-api:
+        container_name: backend
+        build: ./
+        restart: always
+        command: fresh
+        working_dir: /usr/src/gradbook-api
+        environment: 
+          POSTGRES_URI: postgres://sid:secret@postgres:5432/gradbook-docker
+        ports:
+          - "8000:8000"
+        volumes: 
+          - ./:/usr/src/gradbook-api
+
+    # Postgres
+    postgres:
+      environment: 
+        POSTGRES_USER: sid
+        POSTGRES_PASSWORD: secret
+        POSTGRES_DB: gradbook-docker
+        POSTGRES_HOST: postgres
+      build: ./postgres
+      ports: 
+        - "5432:5432"

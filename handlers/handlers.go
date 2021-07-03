@@ -13,7 +13,7 @@ func Login(c *fiber.Ctx) error {
 }
 
 func User(c *fiber.Ctx) error {
-	return c.SendString("HELLO")
+	return c.SendString("HELLO!!!!!!!")
 }
 
 func Logout(c *fiber.Ctx) error {
