@@ -15,14 +15,13 @@ type Answers struct {
 	Answers []Answer `json:"ans"`
 }
 
-type Qa struct {
+type Question struct {
 	ID        uint      `json:"id"`
 	UserId    uint      `json:"user_id"`
-	Question  string    `json:"question"`
+	Question  string    `json:"q_text"`
 	CreatedOn time.Time `json:"created_on"`
-	Answers []Answer `json:"ans"`
 }
 
-type Qas struct {
-	Qas []Qa `json:"qas"`
+type Questions struct {
+	Questions []Question `json:"qs"`
 }

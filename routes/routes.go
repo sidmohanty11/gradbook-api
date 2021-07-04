@@ -14,6 +14,7 @@ func Setup(app *fiber.App) {
 
 	//story routes
 	app.Get("/api/v1/stories", handlers.GetStories)
+	app.Get("/api/v1/story/:id", handlers.GetAStory)
 	app.Post("/api/v1/story", handlers.PostStory)
 	
 	//blog routes
@@ -22,7 +23,8 @@ func Setup(app *fiber.App) {
 	app.Post("/api/v1/blog", handlers.PostBlog)
 	
 	//qa routes
-	app.Get("/api/v1/questions", handlers.GetQuestionsAndAnswers)
+	app.Get("/api/v1/questions", handlers.GetQuestions)
+	app.Get("/api/v1/answers", handlers.GetAnswers)
 	app.Post("/api/v1/question", handlers.PostQuestion)
 	app.Post("/api/v1/answer", handlers.PostAnswer)
 }
