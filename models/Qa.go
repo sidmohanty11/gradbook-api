@@ -11,12 +11,16 @@ type Answer struct {
 	AnswerText string `json:"a_text"`
 }
 
+type Answers struct {
+	Answers []Answer `json:"ans"`
+}
+
 type Qa struct {
 	ID        uint      `json:"id"`
 	UserId    uint      `json:"user_id"`
 	Question  string    `json:"question"`
 	CreatedOn time.Time `json:"created_on"`
-	Answers   []Answer  `json:"ans"`
+	Answers []Answer `json:"ans"`
 }
 
 type Qas struct {

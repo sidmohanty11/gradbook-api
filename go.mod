@@ -3,11 +3,12 @@ module github.com/sidmohanty11/gradbook/server
 go 1.16
 
 require (
-	github.com/gofiber/fiber/v2 v2.13.0 // indirect
-	github.com/jackc/pgconn v1.8.1 // indirect
-	github.com/jackc/pgx/v4 v4.11.0 // indirect
-	github.com/joho/godotenv v1.3.0 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/form3tech-oss/jwt-go v3.2.3+incompatible // indirect
+	github.com/gofiber/fiber/v2 v2.14.0
+	github.com/gofiber/jwt/v2 v2.2.4 // indirect
+	github.com/jackc/pgconn v1.8.1
+	github.com/jackc/pgx/v4 v4.11.0
+	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.6.0 // indirect
-	gorm.io/driver/postgres v1.1.0 // indirect
-	gorm.io/gorm v1.21.11 // indirect
 )

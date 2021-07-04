@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type User struct {
 	ID           uint      `json:"id"`
@@ -9,7 +12,7 @@ type User struct {
 	HashPassword string    `json:"hash"`
 	ImageURL     string    `json:"image_url"`
 	CreatedOn    time.Time `json:"created_on"`
-	LastLogin    time.Time `json:"last_login"`
+	LastLogin    sql.NullTime `json:"last_login"`
 }
 
 type Users struct {

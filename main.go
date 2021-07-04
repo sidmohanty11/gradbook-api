@@ -8,6 +8,7 @@ import (
 	"github.com/sidmohanty11/gradbook/server/db"
 	"github.com/sidmohanty11/gradbook/server/handlers"
 	"github.com/sidmohanty11/gradbook/server/routes"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 const PORT = ":8000"
@@ -17,6 +18,7 @@ func main() {
 	app := fiber.New()
 	
 	app.Use(cors.New(cors.Config{})) //cross-origin-resource-sharing
+	app.Use(logger.New())
 	
 	// db connection
 	db, err := db.ConnectSQL()
@@ -32,5 +34,6 @@ func main() {
 	handlers.NewRepo(db)
 	// server listening port
 	app.Listen(PORT)
+	
 	log.Printf("Listening at PORT%s", PORT)
 }
