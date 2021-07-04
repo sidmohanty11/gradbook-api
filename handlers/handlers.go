@@ -19,6 +19,7 @@ func NewRepo(db *db.DB) {
 	psql = db.SQL
 }
 
+// ------------------AUTH HANDLERS----------------------------------
 func Register(c *fiber.Ctx) error {
 	type RegisterInput struct {
 		Username string `json:"username"`
@@ -114,6 +115,7 @@ func Login(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "data": t})
 }
 
+// User HANDLER ----------------------------------------------------------------
 func User(c *fiber.Ctx) error {
 	rows, err := psql.Query("SELECT id, username, email, image_url, created_on, last_login FROM users;")
 	if err != nil {
@@ -132,10 +134,28 @@ func User(c *fiber.Ctx) error {
 	return c.JSON(result)
 }
 
-func Logout(c *fiber.Ctx) error {
-	return c.SendString("HELLO")
+func DeleteUser(c *fiber.Ctx) error {
+	paramId := c.Params("id")
+	user := new(models.User)
+
+	if err := c.BodyParser(user); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Exec("DELETE FROM users WHERE id = $1", paramId)
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Exec("DELETE FROM login WHERE user_id = $1", paramId)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("Deleted")
 }
 
+// Question/Answer HANDLERS----------------------------------------------------------
 func PostQuestion(c *fiber.Ctx) error {
 	q := new(models.Question)
 
@@ -166,22 +186,6 @@ func PostAnswer(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(a)
-}
-
-func PostStory(c *fiber.Ctx) error {
-	s := new(models.Story)
-
-	if err := c.BodyParser(s); err != nil {
-		return c.Status(400).SendString(err.Error())
-	}
-
-	_, err := psql.Exec("INSERT INTO stories (user_id, name, branch, clubs, image_url, motto, github_link, linkedin_link, youtube_link, journey) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", s.UserId, s.Name, s.Branch, s.Clubs, s.ImageURL, s.Motto, s.GithubLink, s.LinkedinLink, s.YoutubeLink, s.Journey)
-
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(s)
 }
 
 func GetQuestions(c *fiber.Ctx) error {
@@ -225,6 +229,59 @@ func GetAnswers(c *fiber.Ctx) error {
 	return c.JSON(result)
 }
 
+func PutQuestion(c *fiber.Ctx) error {
+	q := new(models.Question)
+
+	if err := c.BodyParser(q); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Query("UPDATE questions SET q_text=$1 WHERE id=$2", q.Question, q.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(201).JSON(q)
+}
+
+func DeleteQuestion(c *fiber.Ctx) error {
+	paramId := c.Params("id")
+	q := new(models.Question)
+
+	if err := c.BodyParser(q); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Exec("DELETE FROM questions WHERE id = $1", paramId)
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Exec("DELETE FROM answers WHERE q_id = $1", paramId)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("Deleted")
+}
+
+// Story HANDLERS----------------------------------------------------------------
+func PostStory(c *fiber.Ctx) error {
+	s := new(models.Story)
+
+	if err := c.BodyParser(s); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Exec("INSERT INTO stories (user_id, name, branch, clubs, image_url, motto, github_link, linkedin_link, youtube_link, journey) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", s.UserId, s.Name, s.Branch, s.Clubs, s.ImageURL, s.Motto, s.GithubLink, s.LinkedinLink, s.YoutubeLink, s.Journey)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(s)
+}
+
 func GetStories(c *fiber.Ctx) error {
 	rows, err := psql.Query("SELECT id, user_id, name, branch, clubs, image_url, motto, github_link, linkedin_link, youtube_link, journey FROM stories;")
 	if err != nil {
@@ -256,6 +313,22 @@ func GetAStory(c *fiber.Ctx) error {
 	return c.JSON(story)
 }
 
+func PutStory(c *fiber.Ctx) error {
+	s := new(models.Story)
+
+	if err := c.BodyParser(s); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Query("UPDATE stories SET name=$1, branch=$2, clubs=$3, image_url=$4, motto=$5, github_link=$6, linkedin_link=$7, youtube_link=$8, journey=$9 WHERE id=$10",s.Name,s.Branch,s.Clubs,s.ImageURL,s.Motto,s.GithubLink,s.LinkedinLink,s.YoutubeLink,s.Journey, s.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(201).JSON(s)
+}
+
+// Blog HANDLERS-------------------------------------------------------------
 func GetBlogs(c *fiber.Ctx) error {
 	rows, err := psql.Query("SELECT id, user_id, blog_title, blog_text, created_on FROM blogs;")
 	if err != nil {
@@ -301,4 +374,35 @@ func PostBlog(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(b)
+}
+
+func PutBlog(c *fiber.Ctx) error {
+	b := new(models.Blog)
+
+	if err := c.BodyParser(b); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Query("UPDATE blogs SET blog_title=$1, blog_text=$2 WHERE id=$3", b.BlogTitle,b.BlogText,b.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(201).JSON(b)
+}
+
+func DeleteBlog(c *fiber.Ctx) error {
+	paramId := c.Params("id")
+	b := new(models.Blog)
+
+	if err := c.BodyParser(b); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	_, err := psql.Exec("DELETE FROM blogs WHERE id = $1", paramId)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("Deleted")
 }
