@@ -9,6 +9,7 @@ type Answer struct {
 	QId        uint   `json:"q_id"`
 	UserId     uint   `json:"user_id"`
 	AnswerText string `json:"a_text"`
+	Username string `json:"username"`
 }
 
 type Answers struct {
@@ -20,6 +21,8 @@ type Question struct {
 	UserId    uint      `json:"user_id"`
 	Question  string    `json:"q_text"`
 	CreatedOn time.Time `json:"created_on"`
+	Username string `json:"username"`
+	ImageURL 	string    `json:"image_url"`
 }
 
 type Questions struct {

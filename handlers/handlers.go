@@ -42,7 +42,7 @@ func Register(c *fiber.Ctx) error {
 		return err
 	}
 
-	_, err = psql.Exec("insert into users (username, image_url, email) values ($1,$2,$3);", identity, imgurl, email)
+	_, err = psql.Exec("insert into users (username, image_url, hash, email) values ($1,$2,$3,$4);", identity, imgurl, hashedpass, email)
 
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func Register(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "data": t})
+	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "data": t, "username": identity})
 }
 
 func Login(c *fiber.Ctx) error {
@@ -112,26 +112,32 @@ func Login(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "data": t})
+	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "data": t, "username": dbUsername})
 }
 
 // User HANDLER ----------------------------------------------------------------
-func User(c *fiber.Ctx) error {
-	rows, err := psql.Query("SELECT id, username, email, image_url, created_on, last_login FROM users;")
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	defer rows.Close()
-	result := models.Users{}
+func UserById(c *fiber.Ctx) error {
+	paramId := c.Params("id")
+	row := psql.QueryRow("SELECT id, username, email, image_url, created_on, last_login FROM users WHERE id = $1;", paramId)
 
-	for rows.Next() {
-		user := models.User{}
-		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.ImageURL, &user.CreatedOn, &user.LastLogin); err != nil {
-			return err
-		}
-		result.Users = append(result.Users, user)
+	user := models.User{}
+	if err := row.Scan(&user.ID, &user.Username, &user.Email, &user.ImageURL, &user.CreatedOn, &user.LastLogin); err != nil {
+		return err
 	}
-	return c.JSON(result)
+	return c.JSON(user)
+}
+
+func UserByUsername(c *fiber.Ctx) error {
+	username := c.Params("username")
+
+	row := psql.QueryRow("SELECT id, username, email, image_url, created_on, last_login FROM users WHERE username = $1;", username)
+
+	user := models.User{}
+	if err := row.Scan(&user.ID, &user.Username, &user.Email, &user.ImageURL, &user.CreatedOn, &user.LastLogin); err != nil {
+		return err
+	}
+
+	return c.JSON(user)
 }
 
 func DeleteUser(c *fiber.Ctx) error {
@@ -142,12 +148,13 @@ func DeleteUser(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := psql.Exec("DELETE FROM users WHERE id = $1", paramId)
+	uName := user.Username
+	_, err := psql.Exec("DELETE FROM users WHERE id = $1;", paramId)
 	if err != nil {
 		return err
 	}
 
-	_, err = psql.Exec("DELETE FROM login WHERE user_id = $1", paramId)
+	_, err = psql.Exec("DELETE FROM login WHERE username = $1;", uName)
 	if err != nil {
 		return err
 	}
@@ -189,7 +196,7 @@ func PostAnswer(c *fiber.Ctx) error {
 }
 
 func GetQuestions(c *fiber.Ctx) error {
-	rows, err := psql.Query("select id, user_id, q_text, created_on from questions;")
+	rows, err := psql.Query("SELECT questions.id, questions.user_id, questions.q_text, questions.created_on, users.username, users.image_url FROM questions LEFT JOIN users ON user_id = users.id ORDER BY created_on DESC;")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -199,7 +206,7 @@ func GetQuestions(c *fiber.Ctx) error {
 	for rows.Next() {
 		q := models.Question{}
 
-		if err := rows.Scan(&q.ID, &q.UserId, &q.Question, &q.CreatedOn); err != nil {
+		if err := rows.Scan(&q.ID, &q.UserId, &q.Question, &q.CreatedOn, &q.Username, &q.ImageURL); err != nil {
 			return err
 		}
 		result.Questions = append(result.Questions, q)
@@ -209,7 +216,8 @@ func GetQuestions(c *fiber.Ctx) error {
 }
 
 func GetAnswers(c *fiber.Ctx) error {
-	rows, err := psql.Query("select id, user_id, q_id, a_text from answers;")
+	paramId := c.Params("id")
+	rows, err := psql.Query("SELECT answers.id, answers.user_id, answers.q_id, answers.a_text, users.username FROM answers LEFT JOIN users ON user_id = users.id WHERE q_id = $1;", paramId)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -219,7 +227,7 @@ func GetAnswers(c *fiber.Ctx) error {
 	for rows.Next() {
 		a := models.Answer{}
 
-		if err := rows.Scan(&a.ID, &a.UserId, &a.QId, &a.AnswerText); err != nil {
+		if err := rows.Scan(&a.ID, &a.UserId, &a.QId, &a.AnswerText, &a.Username); err != nil {
 			return err
 		}
 
@@ -283,7 +291,7 @@ func PostStory(c *fiber.Ctx) error {
 }
 
 func GetStories(c *fiber.Ctx) error {
-	rows, err := psql.Query("SELECT id, user_id, name, branch, clubs, image_url, motto, github_link, linkedin_link, youtube_link, journey FROM stories;")
+	rows, err := psql.Query("SELECT stories.id, stories.user_id, stories.name, stories.branch, stories.clubs, stories.image_url, stories.motto, stories.github_link, stories.linkedin_link, stories.youtube_link, stories.journey, users.username, users.image_url FROM stories LEFT JOIN users ON user_id = users.id ORDER BY stories.id DESC;")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -292,7 +300,7 @@ func GetStories(c *fiber.Ctx) error {
 
 	for rows.Next() {
 		story := models.Story{}
-		if err := rows.Scan(&story.ID, &story.UserId, &story.Name, &story.Branch, &story.Clubs, &story.ImageURL, &story.Motto, &story.GithubLink, &story.LinkedinLink, &story.YoutubeLink, &story.Journey); err != nil {
+		if err := rows.Scan(&story.ID, &story.UserId, &story.Name, &story.Branch, &story.Clubs, &story.ImageURL, &story.Motto, &story.GithubLink, &story.LinkedinLink, &story.YoutubeLink, &story.Journey, &story.Username, &story.ImageUrl); err != nil {
 			return err
 		}
 		result.Stories = append(result.Stories, story)
@@ -320,7 +328,7 @@ func PutStory(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := psql.Query("UPDATE stories SET name=$1, branch=$2, clubs=$3, image_url=$4, motto=$5, github_link=$6, linkedin_link=$7, youtube_link=$8, journey=$9 WHERE id=$10",s.Name,s.Branch,s.Clubs,s.ImageURL,s.Motto,s.GithubLink,s.LinkedinLink,s.YoutubeLink,s.Journey, s.ID)
+	_, err := psql.Query("UPDATE stories SET name=$1, branch=$2, clubs=$3, image_url=$4, motto=$5, github_link=$6, linkedin_link=$7, youtube_link=$8, journey=$9 WHERE id=$10", s.Name, s.Branch, s.Clubs, s.ImageURL, s.Motto, s.GithubLink, s.LinkedinLink, s.YoutubeLink, s.Journey, s.ID)
 	if err != nil {
 		return err
 	}
@@ -330,7 +338,7 @@ func PutStory(c *fiber.Ctx) error {
 
 // Blog HANDLERS-------------------------------------------------------------
 func GetBlogs(c *fiber.Ctx) error {
-	rows, err := psql.Query("SELECT id, user_id, blog_title, blog_text, created_on FROM blogs;")
+	rows, err := psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id;")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -339,7 +347,7 @@ func GetBlogs(c *fiber.Ctx) error {
 
 	for rows.Next() {
 		blog := models.Blog{}
-		if err := rows.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogText, &blog.CreatedOn); err != nil {
+		if err := rows.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogText, &blog.CreatedOn, &blog.Username, &blog.ImageURL); err != nil {
 			return err
 		}
 		result.Blogs = append(result.Blogs, blog)
@@ -383,7 +391,7 @@ func PutBlog(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := psql.Query("UPDATE blogs SET blog_title=$1, blog_text=$2 WHERE id=$3", b.BlogTitle,b.BlogText,b.ID)
+	_, err := psql.Query("UPDATE blogs SET blog_title=$1, blog_text=$2 WHERE id=$3", b.BlogTitle, b.BlogText, b.ID)
 	if err != nil {
 		return err
 	}

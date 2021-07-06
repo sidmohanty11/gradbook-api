@@ -10,6 +10,8 @@ type Blog struct {
 	BlogTitle string `json:"blog_title"`
 	BlogText string `json:"blog_text"`
 	CreatedOn time.Time `json:"created_on"`
+	Username string `json:"username"`
+	ImageURL 	string    `json:"image_url"`
 }
 
 type Blogs struct {

@@ -1,7 +1,5 @@
 package models
 
-import "database/sql"
-
 type Story struct {
 	ID           uint   `json:"id"`
 	UserId       uint   `json:"user_id"`
@@ -9,11 +7,13 @@ type Story struct {
 	Branch       string `json:"branch"`
 	Clubs        string `json:"clubs"`
 	Motto        string `json:"motto"`
-	GithubLink   sql.NullString `json:"github_link"`
-	YoutubeLink  sql.NullString `json:"youtube_link"`
-	LinkedinLink sql.NullString `json:"linkedin_link"`
+	GithubLink   string `json:"github_link"`
+	YoutubeLink  string `json:"youtube_link"`
+	LinkedinLink string `json:"linkedin_link"`
 	ImageURL     string `json:"image_url"`
 	Journey      string `json:"journey"`
+	Username string `json:"username"`
+	ImageUrl 	string    `json:"user_image"`
 }
 
 type Stories struct {

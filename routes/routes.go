@@ -9,7 +9,8 @@ func Setup(app *fiber.App) {
 	//auth routes
 	app.Post("/api/v1/register", handlers.Register)
 	app.Post("/api/v1/login", handlers.Login)
-	app.Get("/api/v1/user", handlers.User)
+	app.Get("/api/v1/users/:id", handlers.UserById)
+	app.Get("/api/v1/user/:username", handlers.UserByUsername)
 	app.Delete("/api/v1/story/:id", handlers.DeleteUser)
 
 	//story routes
@@ -27,7 +28,7 @@ func Setup(app *fiber.App) {
 	
 	//qa routes
 	app.Get("/api/v1/questions", handlers.GetQuestions)
-	app.Get("/api/v1/answers", handlers.GetAnswers)
+	app.Get("/api/v1/answers/:id", handlers.GetAnswers)
 	app.Post("/api/v1/question", handlers.PostQuestion)
 	app.Post("/api/v1/answer", handlers.PostAnswer)
 	app.Put("/api/v1/question/:id", handlers.PutQuestion)
