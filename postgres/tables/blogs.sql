@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS blogs (
     blog_title TEXT NOT NULL,
     blog_text TEXT NOT NULL,
 	created_on TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) on delete cascade
 );
 
 COMMIT;

@@ -5,6 +5,7 @@ COPY . .
 
 RUN go get -d -v ./...
 RUN go install -v ./...
-RUN go get github.com/pilu/fresh
+RUN go get github.com/cosmtrek/air
+RUN air init
 
 CMD ["gradbook-api"]

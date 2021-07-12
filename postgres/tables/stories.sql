@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS stories (
     linkedin_link TEXT DEFAULT '' NOT NULL,
     image_url TEXT NOT NULL,
     journey TEXT NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(user_id) REFERENCES users(id) on delete cascade
 );
 
 COMMIT;

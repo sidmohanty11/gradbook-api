@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS answers (
     q_id integer NOT NULL,
 	user_id integer NOT NULL,
     a_text TEXT NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(q_id) REFERENCES questions(id)
+    FOREIGN KEY(user_id) REFERENCES users(id) on delete cascade,
+    FOREIGN KEY(q_id) REFERENCES questions(id) on delete cascade
 );
 
 COMMIT;

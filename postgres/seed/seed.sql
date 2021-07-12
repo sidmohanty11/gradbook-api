@@ -1,9 +1,9 @@
 INSERT INTO users (hash, username, email, image_url) values ('$2a$14$EWIWa0JVXjjkdwg9Qw0Gv.ReelDDX6hsgc/7rQfCKyjkxnNAbi4PW' ,'sid', 'sid@sid.com', 'https://avatars.githubusercontent.com/u/73601258?v=4');
-INSERT INTO login (hash, username) values ('$2a$14$EWIWa0JVXjjkdwg9Qw0Gv.ReelDDX6hsgc/7rQfCKyjkxnNAbi4PW' ,'sid');
+INSERT INTO login (hash, username, user_id) values ('$2a$14$EWIWa0JVXjjkdwg9Qw0Gv.ReelDDX6hsgc/7rQfCKyjkxnNAbi4PW' ,'sid', 1);
 INSERT INTO users (hash, username, email, image_url) values ('$2a$14$kPIHlK0fFuhCE1iWZvgL9ueKFTLm98wCbr6cde2lrm38VpWstEgLm' ,'ram', 'ram@ram.com', 'https://avatars.githubusercontent.com/u/54383831?v=4');
-INSERT INTO login (hash, username) values ('$2a$14$kPIHlK0fFuhCE1iWZvgL9ueKFTLm98wCbr6cde2lrm38VpWstEgLm' ,'ram');
+INSERT INTO login (hash, username, user_id) values ('$2a$14$kPIHlK0fFuhCE1iWZvgL9ueKFTLm98wCbr6cde2lrm38VpWstEgLm' ,'ram', 2);
 INSERT INTO users (hash, username, email, image_url) values ('$2a$14$kPIHlK0fFuhCE1iWZvgL9ueKFTLm98wCbr6cde2lrm38VpWstEgLm', 'shyam', 'shyam@shyam.com', 'https://avatars.githubusercontent.com/u/54383831?v=4');
-INSERT INTO login (hash, username) values ('$2a$14$kPIHlK0fFuhCE1iWZvgL9ueKFTLm98wCbr6cde2lrm38VpWstEgLm', 'shyam');
+INSERT INTO login (hash, username, user_id) values ('$2a$14$kPIHlK0fFuhCE1iWZvgL9ueKFTLm98wCbr6cde2lrm38VpWstEgLm', 'shyam', 3);
 
 INSERT INTO stories (user_id, name, branch, clubs, motto, github_link, linkedin_link, image_url, journey) values (1,'sid','branch','clubs','my motto','github.com/sidmohanty11','linkedin.com/in/sidmohanty11','https://www.pixsy.com/wp-content/uploads/2021/04/ben-sweet-2LowviVHZ-E-unsplash-1.jpeg', 'journey');
 
