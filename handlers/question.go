@@ -13,6 +13,10 @@ func PostQuestion(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
+	if q.Question == "" {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
+	}
+
 	_, err := Psql.Exec("INSERT INTO questions (q_text, user_id) VALUES ($1, $2)", q.Question, q.UserId)
 
 	if err != nil {

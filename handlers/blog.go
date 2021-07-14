@@ -6,7 +6,7 @@ import (
 )
 
 func GetBlogs(c *fiber.Ctx) error {
-	rows, err := Psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id;")
+	rows, err := Psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_thumbnail, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id;")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -25,7 +25,7 @@ func GetBlogs(c *fiber.Ctx) error {
 
 func GetBlogsByUserId(c *fiber.Ctx) error {
 	userId := c.Params("id")
-	rows, err := Psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id WHERE user_id = $1;", userId)
+	rows, err := Psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blog_thumbnail, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id WHERE user_id = $1;", userId)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -45,7 +45,7 @@ func GetBlogsByUserId(c *fiber.Ctx) error {
 func GetABlog(c *fiber.Ctx) error {
 	theBlog := c.Params("id")
 
-	row := Psql.QueryRow("SELECT id, user_id, blog_title, blog_text, created_on FROM blogs WHERE id = $1;", theBlog)
+	row := Psql.QueryRow("SELECT id, user_id, blog_title, blog_thumbnail, blog_text, created_on FROM blogs WHERE id = $1;", theBlog)
 
 	blog := models.Blog{}
 	if err := row.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogText, &blog.CreatedOn); err != nil {
@@ -62,7 +62,11 @@ func PostBlog(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := Psql.Exec("INSERT INTO stories (user_id, blog_title, blog_text) VALUES ($1, $2, $3)", b.UserId, b.BlogTitle, b.BlogText)
+	if b.BlogText == "" || b.BlogThumbnail == "" || b.BlogTitle == "" {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
+	}
+
+	_, err := Psql.Exec("INSERT INTO stories (user_id, blog_title, blog_thumbnail, blog_title, blog_text) VALUES ($1, $2, $3, $4, $5)", b.UserId, b.BlogTitle, b.BlogThumbnail, b.BlogTitle, b.BlogText)
 
 	if err != nil {
 		return err
@@ -76,6 +80,10 @@ func PutBlog(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(b); err != nil {
 		return c.Status(400).SendString(err.Error())
+	}
+
+	if b.BlogText == "" || b.BlogThumbnail == "" || b.BlogTitle == "" {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
 	}
 
 	_, err := Psql.Query("UPDATE blogs SET blog_title=$1, blog_text=$2 WHERE id=$3", b.BlogTitle, b.BlogText, b.ID)

@@ -12,8 +12,8 @@ type Story struct {
 	LinkedinLink string `json:"linkedin_link"`
 	ImageURL     string `json:"image_url"`
 	Journey      string `json:"journey"`
-	Username string `json:"username"`
-	ImageUrl 	string    `json:"user_image"`
+	Username     string `json:"username"`
+	UserImageUrl string `json:"user_image"`
 }
 
 type Stories struct {

@@ -14,7 +14,14 @@ func UserById(c *fiber.Ctx) error {
 	if err := row.Scan(&user.ID, &user.Username, &user.Email, &user.ImageURL, &user.CreatedOn, &user.LastLogin); err != nil {
 		return err
 	}
-	return c.JSON(user)
+
+	claims, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
+	return c.JSON(fiber.Map{"user": user, "claims": claims})
 }
 
 // finds an user by username, returns data to the frontend as json
@@ -28,7 +35,13 @@ func UserByUsername(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(user)
+	claims, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
+	return c.JSON(fiber.Map{"user": user, "claims": claims})
 }
 
 // deletes a particular user from the db ...

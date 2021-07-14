@@ -18,7 +18,7 @@ INSERT INTO answers (user_id, q_id, a_text) values (2, 2, 'i got it');
 
 INSERT INTO messages (from_user_id, to_user_id, content) values (1, 2, 'hi i am sid');
 
-INSERT INTO blogs (user_id, blog_title, blog_text) values (1,'blog title', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto ipsum molestias quo, laboriosam pariatur veniam quam, distinctio assumenda deserunt doloribus animi! Illo ullam magnam repellat laborum! Deserunt et perspiciatis quas?
+INSERT INTO blogs (user_id, blog_title, blog_thumbnail, blog_text) values (1,'blog title', 'https://www.pixsy.com/wp-content/uploads/2021/04/ben-sweet-2LowviVHZ-E-unsplash-1.jpeg', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto ipsum molestias quo, laboriosam pariatur veniam quam, distinctio assumenda deserunt doloribus animi! Illo ullam magnam repellat laborum! Deserunt et perspiciatis quas?
 Error veritatis doloremque quaerat debitis vitae? Ad laboriosam ullam atque perferendis placeat animi magni aspernatur voluptatum quos, distinctio expedita sunt odio eligendi iusto magnam corporis, tempora nihil voluptatibus quia enim?
 Repellendus dolore tempora aperiam minima voluptatem doloribus animi aliquid soluta inventore perspiciatis! Libero optio rem aperiam et sed, voluptas iure magni incidunt perferendis deserunt non. Sed eligendi saepe eos corrupti!
 Ad provident id at officiis iusto totam dolores excepturi suscipit tempora quia ab a laudantium, quas corrupti odio sequi error, expedita aspernatur accusamus dolor sed in repudiandae! Necessitatibus, fugiat sed?
