@@ -34,7 +34,7 @@ func GetBlogsByUserId(c *fiber.Ctx) error {
 
 	for rows.Next() {
 		blog := models.Blog{}
-		if err := rows.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogText, &blog.CreatedOn, &blog.Username, &blog.ImageURL); err != nil {
+		if err := rows.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogThumbnail, &blog.BlogText, &blog.CreatedOn, &blog.Username, &blog.ImageURL); err != nil {
 			return err
 		}
 		result.Blogs = append(result.Blogs, blog)
@@ -45,10 +45,10 @@ func GetBlogsByUserId(c *fiber.Ctx) error {
 func GetABlog(c *fiber.Ctx) error {
 	theBlog := c.Params("id")
 
-	row := Psql.QueryRow("SELECT id, user_id, blog_title, blog_thumbnail, blog_text, created_on FROM blogs WHERE id = $1;", theBlog)
+	row := Psql.QueryRow("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_thumbnail, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id WHERE blogs.id = $1;", theBlog)
 
 	blog := models.Blog{}
-	if err := row.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogText, &blog.CreatedOn); err != nil {
+	if err := row.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogThumbnail, &blog.BlogText, &blog.CreatedOn, &blog.Username, &blog.ImageURL); err != nil {
 		return err
 	}
 
