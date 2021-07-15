@@ -15,7 +15,7 @@ func GetBlogs(c *fiber.Ctx) error {
 
 	for rows.Next() {
 		blog := models.Blog{}
-		if err := rows.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogText, &blog.CreatedOn, &blog.Username, &blog.ImageURL); err != nil {
+		if err := rows.Scan(&blog.ID, &blog.UserId, &blog.BlogTitle, &blog.BlogThumbnail, &blog.BlogText, &blog.CreatedOn, &blog.Username, &blog.ImageURL); err != nil {
 			return err
 		}
 		result.Blogs = append(result.Blogs, blog)
@@ -66,7 +66,7 @@ func PostBlog(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
 	}
 
-	_, err := Psql.Exec("INSERT INTO stories (user_id, blog_title, blog_thumbnail, blog_title, blog_text) VALUES ($1, $2, $3, $4, $5)", b.UserId, b.BlogTitle, b.BlogThumbnail, b.BlogTitle, b.BlogText)
+	_, err := Psql.Exec("INSERT INTO blogs (user_id, blog_title, blog_thumbnail, blog_text) VALUES ($1, $2, $3, $4)", b.UserId, b.BlogTitle, b.BlogThumbnail, b.BlogText)
 
 	if err != nil {
 		return err
