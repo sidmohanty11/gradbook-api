@@ -6,6 +6,12 @@ import (
 )
 
 func PostMessages(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	fromUserID := c.Params("from")
 	toUserID := c.Params("to")
 
@@ -19,7 +25,7 @@ func PostMessages(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
 	}
 
-	_, err := Psql.Exec("INSERT INTO messages (from_user_id, to_user_id, content) VALUES ($1, $2, $3)", fromUserID, toUserID, m.Content)
+	_, err = Psql.Exec("INSERT INTO messages (from_user_id, to_user_id, content) VALUES ($1, $2, $3)", fromUserID, toUserID, m.Content)
 	if err != nil {
 		return err
 	}
@@ -28,6 +34,11 @@ func PostMessages(c *fiber.Ctx) error {
 }
 
 func GetMessages(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	userID := c.Params("id")
 	toUserID := c.Params("toid")
 	rows, err := Psql.Query("SELECT id, from_user_id, to_user_id, content, created_on FROM messages WHERE from_user_id = $1 AND to_user_id = $2;", userID, toUserID)

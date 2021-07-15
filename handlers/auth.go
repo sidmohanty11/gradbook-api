@@ -39,16 +39,16 @@ func Register(c *fiber.Ctx) error {
 		return err
 	}
 
-	_, err = Psql.Exec("insert into users (username, image_url, hash, email) values ($1,$2,$3,$4);", identity, imgurl, hashedpass, email)
+	row := Psql.QueryRow("insert into users (username, image_url, email) values ($1,$2,$3) returning id;", identity, imgurl, email)
+
+	var id int
+
+	row.Scan(&id)
+
+	_, err = Psql.Exec("insert into login (user_id, username, hash) values ($1,$2,$3);", id, identity, hashedpass)
 
 	if err != nil {
-		return c.SendStatus(fiber.StatusSeeOther)
-	}
-
-	_, err = Psql.Exec("insert into login (username, hash) values ($1,$2);", identity, hashedpass)
-
-	if err != nil {
-		return c.SendStatus(fiber.StatusSeeOther)
+		return err
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)

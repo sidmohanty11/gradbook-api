@@ -48,7 +48,13 @@ func UserByUsername(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	paramId := c.Params("id")
 
-	_, err := Psql.Exec("DELETE FROM users WHERE id = $1;", paramId)
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
+	_, err = Psql.Exec("DELETE FROM users WHERE id = $1;", paramId)
 	if err != nil {
 		return err
 	}

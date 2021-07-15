@@ -6,6 +6,12 @@ import (
 )
 
 func GetBlogs(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	rows, err := Psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_thumbnail, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id;")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -24,6 +30,12 @@ func GetBlogs(c *fiber.Ctx) error {
 }
 
 func GetBlogsByUserId(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	userId := c.Params("id")
 	rows, err := Psql.Query("SELECT blogs.id, blogs.user_id, blogs.blog_title, blog_thumbnail, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id WHERE user_id = $1;", userId)
 	if err != nil {
@@ -43,6 +55,12 @@ func GetBlogsByUserId(c *fiber.Ctx) error {
 }
 
 func GetABlog(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	theBlog := c.Params("id")
 
 	row := Psql.QueryRow("SELECT blogs.id, blogs.user_id, blogs.blog_title, blogs.blog_thumbnail, blogs.blog_text, blogs.created_on, users.username, users.image_url FROM blogs LEFT JOIN users ON user_id = users.id WHERE blogs.id = $1;", theBlog)
@@ -56,6 +74,12 @@ func GetABlog(c *fiber.Ctx) error {
 }
 
 func PostBlog(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	b := new(models.Blog)
 
 	if err := c.BodyParser(b); err != nil {
@@ -66,7 +90,7 @@ func PostBlog(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
 	}
 
-	_, err := Psql.Exec("INSERT INTO blogs (user_id, blog_title, blog_thumbnail, blog_text) VALUES ($1, $2, $3, $4)", b.UserId, b.BlogTitle, b.BlogThumbnail, b.BlogText)
+	_, err = Psql.Exec("INSERT INTO blogs (user_id, blog_title, blog_thumbnail, blog_text) VALUES ($1, $2, $3, $4)", b.UserId, b.BlogTitle, b.BlogThumbnail, b.BlogText)
 
 	if err != nil {
 		return err
@@ -76,6 +100,12 @@ func PostBlog(c *fiber.Ctx) error {
 }
 
 func PutBlog(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	b := new(models.Blog)
 
 	if err := c.BodyParser(b); err != nil {
@@ -86,7 +116,7 @@ func PutBlog(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
 	}
 
-	_, err := Psql.Query("UPDATE blogs SET blog_title=$1, blog_text=$2 WHERE id=$3", b.BlogTitle, b.BlogText, b.ID)
+	_, err = Psql.Query("UPDATE blogs SET blog_title=$1, blog_text=$2 WHERE id=$3", b.BlogTitle, b.BlogText, b.ID)
 	if err != nil {
 		return err
 	}
@@ -95,6 +125,12 @@ func PutBlog(c *fiber.Ctx) error {
 }
 
 func DeleteBlog(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
+
 	paramId := c.Params("id")
 	b := new(models.Blog)
 
@@ -102,7 +138,7 @@ func DeleteBlog(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := Psql.Exec("DELETE FROM blogs WHERE id = $1", paramId)
+	_, err = Psql.Exec("DELETE FROM blogs WHERE id = $1", paramId)
 	if err != nil {
 		return err
 	}

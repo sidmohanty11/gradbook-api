@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS messages (
     to_user_id integer NOT NULL,
     content TEXT NOT NULL,
     created_on TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY(from_user_id) REFERENCES users (id),
-    FOREIGN KEY(to_user_id) REFERENCES users (id)
+    FOREIGN KEY(from_user_id) REFERENCES users (id) on delete cascade,
+    FOREIGN KEY(to_user_id) REFERENCES users (id) on delete cascade
 );
 
 COMMIT;

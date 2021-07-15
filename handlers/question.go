@@ -7,6 +7,11 @@ import (
 
 // POST route to post a question.
 func PostQuestion(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	q := new(models.Question)
 
 	if err := c.BodyParser(q); err != nil {
@@ -17,7 +22,7 @@ func PostQuestion(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "fill the essential stuffs before submitting."})
 	}
 
-	_, err := Psql.Exec("INSERT INTO questions (q_text, user_id) VALUES ($1, $2)", q.Question, q.UserId)
+	_, err = Psql.Exec("INSERT INTO questions (q_text, user_id) VALUES ($1, $2)", q.Question, q.UserId)
 
 	if err != nil {
 		return err
@@ -28,6 +33,11 @@ func PostQuestion(c *fiber.Ctx) error {
 
 // GET route to get all the questions, particularly fetching questions at the home page.
 func GetQuestions(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	rows, err := Psql.Query("SELECT questions.id, questions.user_id, questions.q_text, questions.created_on, users.username, users.image_url FROM questions LEFT JOIN users ON user_id = users.id ORDER BY created_on DESC;")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -49,13 +59,18 @@ func GetQuestions(c *fiber.Ctx) error {
 
 // UPDATE route for changing question text.
 func PutQuestion(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	q := new(models.Question)
 
 	if err := c.BodyParser(q); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := Psql.Query("UPDATE questions SET q_text=$1 WHERE id=$2", q.Question, q.ID)
+	_, err = Psql.Query("UPDATE questions SET q_text=$1 WHERE id=$2", q.Question, q.ID)
 	if err != nil {
 		return err
 	}
@@ -65,6 +80,11 @@ func PutQuestion(c *fiber.Ctx) error {
 
 // DELETE route for deleting the question from db and all answers related to it.
 func DeleteQuestion(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	paramId := c.Params("id")
 	q := new(models.Question)
 
@@ -72,7 +92,7 @@ func DeleteQuestion(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	_, err := Psql.Exec("DELETE FROM questions WHERE id = $1", paramId)
+	_, err = Psql.Exec("DELETE FROM questions WHERE id = $1", paramId)
 	if err != nil {
 		return err
 	}

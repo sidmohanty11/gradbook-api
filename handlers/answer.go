@@ -7,6 +7,11 @@ import (
 
 // POST route for posting a question's answer.
 func PostAnswer(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	a := new(models.Answer)
 
 	if err := c.BodyParser(a); err != nil {
@@ -17,7 +22,7 @@ func PostAnswer(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "nothing received."})
 	}
 
-	_, err := Psql.Exec("INSERT INTO answers (q_id, user_id, a_text) VALUES ($1, $2, $3)", a.QId, a.UserId, a.AnswerText)
+	_, err = Psql.Exec("INSERT INTO answers (q_id, user_id, a_text) VALUES ($1, $2, $3)", a.QId, a.UserId, a.AnswerText)
 
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error posting answer to db."})
@@ -28,6 +33,11 @@ func PostAnswer(c *fiber.Ctx) error {
 
 // GET route for getting a question's answers by the specific question_id.
 func GetAnswers(c *fiber.Ctx) error {
+	_, err := ValidToken(c)
+
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "unauthorized"})
+	}
 	paramId := c.Params("id")
 	rows, err := Psql.Query("SELECT answers.id, answers.user_id, answers.q_id, answers.a_text, users.username FROM answers LEFT JOIN users ON user_id = users.id WHERE q_id = $1;", paramId)
 	if err != nil {
