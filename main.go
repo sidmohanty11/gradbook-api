@@ -1,21 +1,28 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/joho/godotenv"
 	"github.com/sidmohanty11/gradbook/server/db"
 	"github.com/sidmohanty11/gradbook/server/handlers"
 	"github.com/sidmohanty11/gradbook/server/routes"
 )
 
-const PORT = ":8000"
-
 func main() {
 	// server connection
 	app := fiber.New()
+
+	PORT, err := getPort()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
@@ -29,7 +36,7 @@ func main() {
 		log.Fatalln("Cannot connect to DB!")
 	}
 
-	log.Println("Connected to DB at PORT 5432")
+	fmt.Println("Connected to DB at PORT 5432")
 	defer db.SQL.Close()
 
 	routes.Setup(app)
@@ -37,5 +44,19 @@ func main() {
 	// server listening port
 	app.Listen(PORT)
 
-	log.Printf("Listening at PORT%s", PORT)
+	fmt.Printf("Listening at PORT%s", PORT)
+}
+
+func getPort() (string, error) {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatalln("Error loading .env file")
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		return "", fmt.Errorf("$PORT not set")
+	}
+	return ":" + port, nil
 }
