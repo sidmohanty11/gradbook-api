@@ -20,10 +20,12 @@ func NewRepo(db *db.DB) {
 }
 
 func ValidToken(c *fiber.Ctx) (*jwt.StandardClaims, error) {
-	err := godotenv.Load()
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	cookie := c.Cookies("sid")

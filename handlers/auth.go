@@ -15,10 +15,12 @@ import (
 // the register handler which takes in the inputs and checks whether everything is valid,
 // hashes the password thats given through bcrypt
 func Register(c *fiber.Ctx) error {
-	err := godotenv.Load()
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	type RegisterInput struct {
@@ -30,7 +32,7 @@ func Register(c *fiber.Ctx) error {
 	}
 	var input RegisterInput
 
-	err = c.BodyParser(&input)
+	err := c.BodyParser(&input)
 
 	if err != nil || input.TheSecretPasscode != os.Getenv("SECRET_PASSCODE") {
 		return c.SendStatus(fiber.StatusUnauthorized)
@@ -65,10 +67,12 @@ func Register(c *fiber.Ctx) error {
 // checks if the user is present in the db,
 // returns a signed jwt token
 func Login(c *fiber.Ctx) error {
-	err := godotenv.Load()
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	type LoginInput struct {
@@ -91,7 +95,7 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(pass))
+	err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(pass))
 
 	if err == bcrypt.ErrMismatchedHashAndPassword {
 		return c.SendStatus(fiber.StatusUnauthorized)

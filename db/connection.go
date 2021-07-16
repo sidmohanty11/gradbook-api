@@ -24,11 +24,14 @@ var dbConn = &DB{}
 
 // creates database pool for Postgres
 func ConnectSQL() (*DB, error) {
-	err := godotenv.Load()
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
+
 	// db, err := pgx.Connect(context.Background(), os.Getenv("POSTGRES_URI"))
 	d, err := NewDatabase(os.Getenv("DATABASE_URL"))
 
