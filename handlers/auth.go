@@ -1,18 +1,26 @@
 package handlers
 
 import (
+	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"github.com/sidmohanty11/gradbook/server/helpers"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // the register handler which takes in the inputs and checks whether everything is valid,
-// hashes the password thats given through bcrypt,
-// signs a jwt token and sends the token to the frontend as well
+// hashes the password thats given through bcrypt
 func Register(c *fiber.Ctx) error {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	type RegisterInput struct {
 		Username          string `json:"username"`
 		Password          string `json:"password"`
@@ -22,9 +30,9 @@ func Register(c *fiber.Ctx) error {
 	}
 	var input RegisterInput
 
-	err := c.BodyParser(&input)
+	err = c.BodyParser(&input)
 
-	if err != nil || input.TheSecretPasscode != "abraabra" {
+	if err != nil || input.TheSecretPasscode != os.Getenv("SECRET_PASSCODE") {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
@@ -51,32 +59,18 @@ func Register(c *fiber.Ctx) error {
 		return err
 	}
 
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["identity"] = identity
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	t, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
-	}
-
-	cookie := fiber.Cookie{
-		Name:     "sid",
-		Value:    t,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-	}
-
-	c.Cookie(&cookie)
-
 	return c.JSON(fiber.Map{"status": "success"})
 }
 
 // checks if the user is present in the db,
 // returns a signed jwt token
 func Login(c *fiber.Ctx) error {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	type LoginInput struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -97,7 +91,7 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(pass))
+	err = bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(pass))
 
 	if err == bcrypt.ErrMismatchedHashAndPassword {
 		return c.SendStatus(fiber.StatusUnauthorized)
@@ -115,7 +109,7 @@ func Login(c *fiber.Ctx) error {
 	claims["identity"] = identity
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	t, err := token.SignedString([]byte("secret"))
+	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

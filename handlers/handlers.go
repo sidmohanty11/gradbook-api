@@ -2,9 +2,12 @@ package handlers
 
 import (
 	"database/sql"
+	"log"
+	"os"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"github.com/sidmohanty11/gradbook/server/db"
 )
 
@@ -17,10 +20,16 @@ func NewRepo(db *db.DB) {
 }
 
 func ValidToken(c *fiber.Ctx) (*jwt.StandardClaims, error) {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	cookie := c.Cookies("sid")
 
 	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
 	})
 
 	// user is not logged in.

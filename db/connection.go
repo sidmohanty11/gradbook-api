@@ -3,9 +3,9 @@ package db
 import (
 	"database/sql"
 	"log"
-	"time"
 	"os"
-	
+	"time"
+
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -15,7 +15,6 @@ import (
 const maxOpenDbConn = 10
 const maxIdleDbConn = 5
 const maxDbLifetime = 5 * time.Minute
-
 
 type DB struct {
 	SQL *sql.DB
@@ -31,12 +30,12 @@ func ConnectSQL() (*DB, error) {
 		log.Fatal("Error loading .env file")
 	}
 	// db, err := pgx.Connect(context.Background(), os.Getenv("POSTGRES_URI"))
-	d, err := NewDatabase(os.Getenv("POSTGRES_URI"))
-	
+	d, err := NewDatabase(os.Getenv("DATABASE_URL"))
+
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	
+
 	d.SetMaxOpenConns(maxOpenDbConn)
 	d.SetMaxIdleConns(maxIdleDbConn)
 	d.SetConnMaxLifetime(maxDbLifetime)
