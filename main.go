@@ -26,7 +26,8 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowHeaders:     "Origin, Content-Type, Accept, Accept-Language, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization",
+		AllowOrigins:     "*",
+		AllowHeaders:     "Origin, Content-Type, Accept, Accept-Language, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Access-Control-Allow-Origin",
 	}))
 
 	app.Use(logger.New())
