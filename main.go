@@ -29,13 +29,13 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins:     "https://gradbook-cet.netlify.com",
-		AllowHeaders:     "Origin, Content-Type, Accept",
-	})) //cross-origin-resource-sharing
+		AllowHeaders:     "Origin, Content-Type, Accept, Accept-Language, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization",
+	}))
+
 	app.Use(logger.New())
 
 	app.Use(csrf.New(csrf.Config{
-		KeyLookup:      "header:X-Csrf-Token",
+		KeyLookup:      "header:X-CSRF-Token",
 		CookieName:     "csrf_",
 		CookieSameSite: "Strict",
 		Expiration:     1 * time.Hour,
