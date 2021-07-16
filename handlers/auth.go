@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -16,11 +15,7 @@ import (
 // hashes the password thats given through bcrypt
 func Register(c *fiber.Ctx) error {
 	if os.Getenv("APP_ENV") != "production" {
-		err := godotenv.Load()
-
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
+		_ = godotenv.Load()
 	}
 
 	type RegisterInput struct {
@@ -68,11 +63,7 @@ func Register(c *fiber.Ctx) error {
 // returns a signed jwt token
 func Login(c *fiber.Ctx) error {
 	if os.Getenv("APP_ENV") != "production" {
-		err := godotenv.Load()
-
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
+		_ = godotenv.Load()
 	}
 
 	type LoginInput struct {

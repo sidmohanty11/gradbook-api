@@ -1,1 +1,1 @@
-web: ./bin/server
+web: go build && .\server

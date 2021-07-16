@@ -48,10 +48,8 @@ func main() {
 }
 
 func getPort() (string, error) {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatalln("Error loading .env file")
+	if os.Getenv("APP_ENV") != "production" {
+		_ = godotenv.Load()
 	}
 
 	port := os.Getenv("PORT")
