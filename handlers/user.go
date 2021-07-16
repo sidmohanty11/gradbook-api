@@ -45,19 +45,19 @@ func UserByUsername(c *fiber.Ctx) error {
 }
 
 // deletes a particular user from the db ...
-func DeleteUser(c *fiber.Ctx) error {
-	paramId := c.Params("id")
+// func DeleteUser(c *fiber.Ctx) error {
+// 	paramId := c.Params("id")
 
-	_, err := ValidToken(c)
+// 	_, err := ValidToken(c)
 
-	if err != nil {
-		return c.JSON(fiber.Map{"status": "unauthorized"})
-	}
+// 	if err != nil {
+// 		return c.JSON(fiber.Map{"status": "unauthorized"})
+// 	}
 
-	_, err = Psql.Exec("DELETE FROM users WHERE id = $1;", paramId)
-	if err != nil {
-		return err
-	}
+// 	_, err = Psql.Exec("DELETE FROM users WHERE id = $1;", paramId)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return c.JSON("Deleted")
-}
+// 	return c.JSON("Deleted")
+// }

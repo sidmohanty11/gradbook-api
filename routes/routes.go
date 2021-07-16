@@ -12,7 +12,7 @@ func Setup(app *fiber.App) {
 	app.Post("/api/v1/logout", handlers.Logout)
 	app.Get("/api/v1/users/:id", handlers.UserById)
 	app.Get("/api/v1/user/:username", handlers.UserByUsername)
-	app.Delete("/api/v1/user/:id", handlers.DeleteUser)
+	// app.Delete("/api/v1/user/:id", handlers.DeleteUser)
 
 	//story routes
 	app.Get("/api/v1/stories", handlers.GetStories)
