@@ -4,13 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/utils"
 	"github.com/joho/godotenv"
 	"github.com/sidmohanty11/gradbook/server/db"
 	"github.com/sidmohanty11/gradbook/server/handlers"
@@ -34,13 +31,14 @@ func main() {
 
 	app.Use(logger.New())
 
-	app.Use(csrf.New(csrf.Config{
-		KeyLookup:      "header:X-CSRF-Token",
-		CookieName:     "csrf_",
-		CookieSameSite: "Strict",
-		Expiration:     1 * time.Hour,
-		KeyGenerator:   utils.UUID,
-	}))
+	// csrf protection...
+	// app.Use(csrf.New(csrf.Config{
+	// 	KeyLookup:      "header:X-CSRF-Token",
+	// 	CookieName:     "csrf_",
+	// 	CookieSameSite: "Strict",
+	// 	Expiration:     1 * time.Hour,
+	// 	KeyGenerator:   utils.UUID,
+	// }))
 
 	// db connection
 	db, err := db.ConnectSQL()
