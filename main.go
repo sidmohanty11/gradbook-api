@@ -26,7 +26,7 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins:     "https://gradbook-cet.netlify.com",
+		AllowOrigins:     "https://gradbook-cet.netlify.app",
 		AllowHeaders:     "Origin, Content-Type, Accept, Accept-Language, Content-Length",
 	}))
 
