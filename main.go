@@ -25,9 +25,11 @@ func main() {
 	}
 
 	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
+		AllowMethods:     "GET,POST,HEAD,OPTIONS,PUT,DELETE,PATCH",
+		AllowHeaders:     "Origin, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,X-Requested-With",
+		ExposeHeaders:    "Origin",
 		AllowCredentials: true,
-		AllowOrigins:     "https://gradbook-cet.netlify.app/",
-		AllowHeaders:     "Origin, Content-Type, Accept, Accept-Language, Content-Length",
 	}))
 
 	app.Use(logger.New())
