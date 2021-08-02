@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"log"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
@@ -21,11 +20,7 @@ func NewRepo(db *db.DB) {
 
 func ValidToken(c *fiber.Ctx) (*jwt.StandardClaims, error) {
 	if os.Getenv("APP_ENV") != "production" {
-		err := godotenv.Load()
-
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
+		_ = godotenv.Load()
 	}
 
 	cookie := c.Cookies("sid")
