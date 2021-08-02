@@ -3,12 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/joho/godotenv"
 	"github.com/sidmohanty11/gradbook/server/db"
 	"github.com/sidmohanty11/gradbook/server/handlers"
 	"github.com/sidmohanty11/gradbook/server/routes"
@@ -18,17 +16,7 @@ func main() {
 	// server connection
 	app := fiber.New()
 
-	PORT, err := getPort()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
-		AllowMethods:     "GET,POST,HEAD,OPTIONS,PUT,DELETE,PATCH",
-		AllowHeaders:     "Origin, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,X-Requested-With",
-		ExposeHeaders:    "Origin",
 		AllowCredentials: true,
 	}))
 
@@ -56,19 +44,5 @@ func main() {
 	routes.Setup(app)
 	handlers.NewRepo(db)
 	// server listening port
-	app.Listen(PORT)
-
-	fmt.Printf("Listening at PORT%s", PORT)
-}
-
-func getPort() (string, error) {
-	if os.Getenv("APP_ENV") != "production" {
-		_ = godotenv.Load()
-	}
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		return "", fmt.Errorf("$PORT not set")
-	}
-	return ":" + port, nil
+	app.Listen(":8000")
 }
