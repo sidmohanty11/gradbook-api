@@ -5,7 +5,6 @@ COPY . .
 
 RUN go get -d -v ./...
 RUN go install -v ./...
-RUN go get github.com/cosmtrek/air
 RUN go build
 
-CMD ["gradbook-api"]
+CMD ["server"]
