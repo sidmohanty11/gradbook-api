@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -44,5 +45,5 @@ func main() {
 	routes.Setup(app)
 	handlers.NewRepo(db)
 	// server listening port
-	app.Listen(":8000")
+	app.Listen(os.Getenv("PORT"))
 }
