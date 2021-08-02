@@ -45,5 +45,5 @@ func main() {
 	routes.Setup(app)
 	handlers.NewRepo(db)
 	// server listening port
-	app.Listen(os.Getenv("PORT"))
+	app.Listen(":" + os.Getenv("PORT"))
 }
